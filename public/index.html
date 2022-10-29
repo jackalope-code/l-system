@@ -3,22 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-  <title>Document</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lindenmayer System Explorer</title>
+  <script type="text/javascript" src="./l-turtle.js"></script>
   <script type="text/javascript" src="./l-sys-lib.js"></script>
-  <script type="text/javscript" src="./l-turtle"></script>
 </head>
 <body>
-  <div id="l-system-root"></div>
+  <canvas id="turtle-canvas" style="width: 1000px; height: 1000px;"></canvas>
   <script type="text/javascript">
     // Load from global/UMD library (dynamic content is added to l-system-root so I use window onload)
     // TODO: MISSING TYPESCRIPT TYPES
     window.onload = function() {
-      ContextFreeLSystem.start_container();
-      const system = ContextFreeLSystem.get_system("plant");
-      for(let i=1; i<=6; i++) {
-        console.log("n=" + i + " | system " + system.step_n(i));
-      }
+      // TODO: Keep working on the Turtle / canvas element and init interface, as well as L System draw rules
+      const turtle = new LTurtle(1000, 1000, x=500, y=0);
+      const system = ContextFreeLSystem.get_system("algea");
+      // for(let i=1; i<=5; i++) {
+      //   // console.log("n=" + i + " | system " + system.step_n(i));
+      //   // console.log("move step")
+      //   turtle.move(50);
+      // }
+      turtle.process_lstr(system.step_n(4), null, 10);
     }
   </script>
 </body>

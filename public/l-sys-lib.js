@@ -1,4 +1,5 @@
 "use strict";
+// TODO: Does not currently check for invalid systems like unrecognized symbols. Rule checking is likely more difficult lol.
 class ContextFreeLSystem {
     constructor(axiom, alphabet, rules) {
         this.axiom = axiom;
@@ -25,29 +26,12 @@ class ContextFreeLSystem {
         }
         return new_system;
     }
-    static start_container() {
-        // console.log("code executed")
-        if (!document) {
-            throw new Error("Could not find global document object.");
-        }
-        const container = document.getElementById("l-system-root");
-        if (container) {
-            const app = document.createElement("div");
-            app.setAttribute("id", "ls-system");
-            // console.log(container);
-            // console.log(app);
-            container.appendChild(app);
-        }
-        else {
-            throw new Error("Could not find app root element l-system-root. Make sure a div element with the given id exists and that the initialization function is called after the element loads.");
-        }
-    }
     static get_system(system_name) {
         switch (system_name) {
             case 'algea':
                 return new ContextFreeLSystem("a", ["a, b"], { "a": "ab", "b": "a" });
             case 'plant':
-                return new ContextFreeLSystem("X", ["X", "F", "+", "-", "[", "]"], { "X": "F+[[X]-F[-FX]+X", "F": "FF" });
+                return new ContextFreeLSystem("X", ["X", "F", "+", "-", "[", "]"], { "X": "F+[[X]-X]-F[-FX]+X", "F": "FF" });
         }
     }
 }
