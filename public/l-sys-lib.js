@@ -1,11 +1,12 @@
 "use strict";
 class ContextFreeLSystem {
-    constructor(alphabet, rules) {
+    constructor(axiom, alphabet, rules) {
+        this.axiom = axiom;
         this.alphabet = alphabet;
         this.rules = rules;
     }
-    compute(axiom, max_iterations) {
-        let system = axiom;
+    step_n(max_iterations) {
+        let system = this.axiom;
         for (let i = 0; i <= max_iterations; i++) {
             system = this._apply_context_free_rules(system);
         }
@@ -39,6 +40,14 @@ class ContextFreeLSystem {
         }
         else {
             throw new Error("Could not find app root element l-system-root. Make sure a div element with the given id exists and that the initialization function is called after the element loads.");
+        }
+    }
+    static get_system(system_name) {
+        switch (system_name) {
+            case 'algea':
+                return new ContextFreeLSystem("a", ["a, b"], { "a": "ab", "b": "a" });
+            case 'plant':
+                return new ContextFreeLSystem("X", ["X", "F", "+", "-", "[", "]"], { "X": "F+[[X]-F[-FX]+X", "F": "FF" });
         }
     }
 }

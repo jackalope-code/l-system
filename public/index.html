@@ -6,17 +6,18 @@
   <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
   <title>Document</title>
   <script type="text/javascript" src="./l-sys-lib.js"></script>
+  <script type="text/javscript" src="./l-turtle"></script>
 </head>
 <body>
   <div id="l-system-root"></div>
   <script type="text/javascript">
-    // Self load until I can figure webpack umd exports out and use this from the script tag, inside a react component, or both.
-    // TODO: MISSING TYPES
+    // Load from global/UMD library (dynamic content is added to l-system-root so I use window onload)
+    // TODO: MISSING TYPESCRIPT TYPES
     window.onload = function() {
       ContextFreeLSystem.start_container();
-      const system = new ContextFreeLSystem(["a, b"], { "a": "ab", "b": "a" });
-      for(let i=1; i<=5; i++) {
-        console.log("n=" + i + " | system " + system.compute("a", i));
+      const system = ContextFreeLSystem.get_system("plant");
+      for(let i=1; i<=6; i++) {
+        console.log("n=" + i + " | system " + system.step_n(i));
       }
     }
   </script>
