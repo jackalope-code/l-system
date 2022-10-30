@@ -1,12 +1,13 @@
 "use strict";
-// W Lindenmayer Turtle - Lucian
+// Global module l-turtle. Compiled from Typescript without webpack bundling rn. Update to webpack UMD.
+// W Lindenmayer Turtle
 function toRadians(degrees) {
     return degrees * (Math.PI / 180);
 }
 class LTurtle {
     // TODO: Cleaner way of initializing quickly/easily for different system starting configurations?
     constructor(width, height, x = width / 2, y = height / 2, angle = 90, step_distance = 5) {
-        var _a, _b, _c;
+        var _a, _b;
         this.history = [];
         if (!document) {
             throw new Error("Could not find global document object.");
@@ -29,56 +30,46 @@ class LTurtle {
             this.ctx.lineWidth = 1;
         }
         (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.scale(1, 1);
-        (_b = this.ctx) === null || _b === void 0 ? void 0 : _b.beginPath();
-        (_c = this.ctx) === null || _c === void 0 ? void 0 : _c.moveTo(this.x, this.height - this.y);
+        // this.ctx?.beginPath();
+        (_b = this.ctx) === null || _b === void 0 ? void 0 : _b.moveTo(this.x, this.height - this.y);
     }
-    process_lstr(lsystem, draw_rules, step_distance) {
-        let i = 0;
-        let plant_draw_rules = {
-            "F": (turtle) => {
-                turtle.move(step_distance, true);
-                console.log(i + " move");
-            },
-            "-": (turtle) => {
-                turtle.turn(-25);
-                console.log(i + " turn right -25");
-            },
-            "+": (turtle) => {
-                turtle.turn(25);
-                console.log(i + " turn left +25");
-            },
-            "X": (turtle) => { },
-            "[": (turtle) => {
-                turtle.push_state();
-            },
-            "]": (turtle) => {
-                turtle.pop_state();
-            }, // restore (pop) saved position and angle values
-        };
-        for (let letter of lsystem) {
-            plant_draw_rules[letter](this);
-            i++;
+    process_lstr(lsystem, draw_rules) {
+        if (draw_rules === undefined || draw_rules == null) {
+            throw new Error("LTurtle draw rules must be specified either by looking a system up by name with LTurtle.get_draw_rules, or by specifying a custom rule map.");
         }
+        let i = 0;
+        // TODO: MANUAL DEBUG OVERRIDE
+        let MAX_ITER = 30;
+        for (let letter of lsystem) {
+            console.log("i=" + i);
+            if (!draw_rules[letter]) {
+                throw new Error("Encounted unknown letter symbol " + letter);
+            }
+            draw_rules[letter](this);
+            i++;
+            if (i > MAX_ITER) {
+                break;
+            }
+        }
+        console.log("testing string " + lsystem.slice(0, MAX_ITER));
     }
     push_state() {
-        var _a;
         this.history.push({ x: this.x, y: this.y, angle: this.angle });
-        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.closePath();
+        // this.ctx?.closePath();
     }
     pop_state() {
-        var _a;
         const restored_pt = this.history.pop();
         if (restored_pt) {
             this.x = restored_pt.x;
             this.y = restored_pt.y;
             this.angle = restored_pt.angle;
         }
-        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.beginPath();
+        // this.ctx?.beginPath();
     }
     move(distance = this.step_distance, wrap = false) {
         var _a, _b;
         this.x += distance * Math.cos(toRadians(this.angle));
-        this.y += this.y + distance * Math.sin(toRadians(this.angle));
+        this.y += distance * Math.sin(toRadians(this.angle));
         if (wrap) {
             this.x = this.x % this.width;
             this.y = this.y % this.height;
@@ -98,5 +89,31 @@ class LTurtle {
     }
     check_y(y) {
         return y >= 0 && y <= this.height;
+    }
+    static get_system_draw_rules(name) {
+        const DEBUG_STEP_DISTANCE = 5;
+        const DEBUG_SHOULD_TURTLE_WRAP = true;
+        let plant_draw_rules = {
+            "F": (turtle) => {
+                turtle.move(DEBUG_STEP_DISTANCE, DEBUG_SHOULD_TURTLE_WRAP);
+            },
+            "-": (turtle) => {
+                turtle.turn(-25);
+            },
+            "+": (turtle) => {
+                turtle.turn(25);
+            },
+            "X": (turtle) => { },
+            "[": (turtle) => {
+                turtle.push_state();
+            },
+            "]": (turtle) => {
+                turtle.pop_state();
+            }, // restore (pop) saved position and angle values
+        };
+        switch (name) {
+            case 'plant':
+                return plant_draw_rules;
+        }
     }
 }

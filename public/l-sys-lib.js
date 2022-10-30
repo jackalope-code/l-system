@@ -1,5 +1,8 @@
 "use strict";
-// TODO: Does not currently check for invalid systems like unrecognized symbols. Rule checking is likely more difficult lol.
+// Global module l-sys-lib. Compiled from Typescript without webpack rn. Update to webpack UMD.
+// Text based Lindenmayer systems designed in tandem with turtle graphics l-turtle
+// Only has context free deterministic grammar rn. Add stochastic and then look into other grammars.
+// TODO: Does not currently check for invalid systems like unrecognized symbols. Rule checking is more difficult lol.
 class ContextFreeLSystem {
     constructor(axiom, alphabet, rules) {
         this.axiom = axiom;

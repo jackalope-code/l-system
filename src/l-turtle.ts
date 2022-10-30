@@ -1,4 +1,5 @@
-// W Lindenmayer Turtle - Lucian
+// Global module l-turtle. Compiled from Typescript without webpack bundling rn. Update to webpack UMD.
+// W Lindenmayer Turtle
 
 // One set of draw rules per lindenmayer system (same dictionary lookup scheme but its a str=>draw fn callback instead of str=>str replacement)
 interface LTurtleDrawRules {
@@ -49,42 +50,34 @@ class LTurtle {
       this.ctx.lineWidth = 1;
     }
     this.ctx?.scale(1, 1);
-    this.ctx?.beginPath();
+    // this.ctx?.beginPath();
     this.ctx?.moveTo(this.x, this.height - this.y);
   }
 
-  process_lstr(lsystem: string, draw_rules: LTurtleDrawRules, step_distance: number) {
+  process_lstr(lsystem: string, draw_rules: LTurtleDrawRules) {
+    if(draw_rules === undefined || draw_rules == null) {
+      throw new Error("LTurtle draw rules must be specified either by looking a system up by name with LTurtle.get_draw_rules, or by specifying a custom rule map.")
+    }
     let i=0;
-    let plant_draw_rules: LTurtleDrawRules = {
-      "F": (turtle: LTurtle) => {
-        turtle.move(step_distance, true);
-        console.log(i + " move")
-      }, // draw forward
-      "-": (turtle: LTurtle) => {
-        turtle.turn(-25)
-        console.log(i + " turn right -25")
-      }, // turn right 25 degrees
-      "+": (turtle: LTurtle) => {
-        turtle.turn(25)
-        console.log(i + " turn left +25")
-      }, // turn left 25 degrees
-      "X": (turtle: LTurtle) => {}, // do nothing
-      "[": (turtle: LTurtle) => {
-        turtle.push_state();
-      }, // save (push) current position and angle values
-      "]": (turtle: LTurtle) => {
-        turtle.pop_state();
-      }, // restore (pop) saved position and angle values
-    }
+    // TODO: MANUAL DEBUG OVERRIDE
+    let MAX_ITER = 30
     for(let letter of lsystem) {
-      plant_draw_rules[letter](this);
+      console.log("i=" + i);
+      if(!draw_rules[letter]) {
+        throw new Error("Encounted unknown letter symbol " + letter);
+      }
+      draw_rules[letter](this);
       i++;
+      if(i > MAX_ITER) {
+        break;
+      }
     }
+    console.log("testing string " + lsystem.slice(0, MAX_ITER))
   }
 
   push_state() {
     this.history.push({x: this.x, y: this.y, angle: this.angle});
-    this.ctx?.closePath();
+    // this.ctx?.closePath();
   }
 
   pop_state() {
@@ -94,12 +87,12 @@ class LTurtle {
       this.y = restored_pt.y;
       this.angle = restored_pt.angle;
     }
-    this.ctx?.beginPath();
+    // this.ctx?.beginPath();
   }
 
   move(distance=this.step_distance, wrap=false) {
     this.x += distance*Math.cos(toRadians(this.angle));
-    this.y += this.y + distance*Math.sin(toRadians(this.angle));
+    this.y += distance*Math.sin(toRadians(this.angle));
     if(wrap) {
       this.x = this.x % this.width;
       this.y = this.y % this.height;
@@ -121,5 +114,32 @@ class LTurtle {
 
   check_y(y: number): boolean {
     return y >= 0 && y <= this.height;
+  }
+
+  static get_system_draw_rules(name: ContextFreeLSystemName) {
+    const DEBUG_STEP_DISTANCE = 5;
+    const DEBUG_SHOULD_TURTLE_WRAP = true;
+    let plant_draw_rules: LTurtleDrawRules = {
+      "F": (turtle: LTurtle) => {
+        turtle.move(DEBUG_STEP_DISTANCE, DEBUG_SHOULD_TURTLE_WRAP);
+      }, // draw forward
+      "-": (turtle: LTurtle) => {
+        turtle.turn(-25)
+      }, // turn right 25 degrees
+      "+": (turtle: LTurtle) => {
+        turtle.turn(25)
+      }, // turn left 25 degrees
+      "X": (turtle: LTurtle) => {}, // do nothing
+      "[": (turtle: LTurtle) => {
+        turtle.push_state();
+      }, // save (push) current position and angle values
+      "]": (turtle: LTurtle) => {
+        turtle.pop_state();
+      }, // restore (pop) saved position and angle values
+    }
+    switch(name) {
+      case 'plant':
+        return plant_draw_rules;
+    }
   }
 }

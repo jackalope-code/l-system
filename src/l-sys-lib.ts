@@ -1,12 +1,16 @@
+// Global module l-sys-lib. Compiled from Typescript without webpack rn. Update to webpack UMD.
+// Text based Lindenmayer systems designed in tandem with turtle graphics l-turtle
+// Only has context free deterministic grammar rn. Add stochastic and then look into other grammars.
+
 // exports removed until webpack is added for proper library bundling
 interface ContextFreeLSystemRules {
   [key: string]: string
 }
 
 // type ContextFreeLSystems = "algea" | "bin_tree" | "cantor_set" | "koch_curve" | "sier_triangle" | "dragon_curve" | "plant"
-type ContextFreeLSystems = "algea" | "plant";
+type ContextFreeLSystemName = "algea" | "plant";
 
-// TODO: Does not currently check for invalid systems like unrecognized symbols. Rule checking is likely more difficult lol.
+// TODO: Does not currently check for invalid systems like unrecognized symbols. Rule checking is more difficult lol.
 class ContextFreeLSystem {
   alphabet: string[];
   rules: ContextFreeLSystemRules;
@@ -39,7 +43,7 @@ class ContextFreeLSystem {
     return new_system;
   }
 
-  static get_system(system_name: ContextFreeLSystems): ContextFreeLSystem {
+  static get_system(system_name: ContextFreeLSystemName): ContextFreeLSystem {
     switch(system_name) {
       case 'algea':
         return new ContextFreeLSystem("a", ["a, b"], { "a": "ab", "b": "a" });
