@@ -42,7 +42,7 @@ class ContextFreeLSystem {
 
   step_n(max_iterations: number): string {
     let system = this.axiom;
-    for(let i=0; i<=max_iterations; i++) {
+    for(let i=0; i<max_iterations; i++) {
       system = this._apply_context_free_rules(system);
     }
     return system;
@@ -53,9 +53,9 @@ class ContextFreeLSystem {
     for(let letter of system) {
       // L-system variable lookup / constant differentiation
       if(letter in this.rules) {
-        new_system.concat(this.rules[letter]);
+        new_system = new_system.concat(this.rules[letter]);
       } else {
-        new_system.concat(letter);
+        new_system = new_system.concat(letter);
       }
     }
     return new_system;
@@ -67,9 +67,13 @@ class ContextFreeLSystem {
   //    error: bool 
   //    message: undefined | string   Contains a diagnostic error message
   // TODO: What would happen with two, three character alphabets? Is that case useful? It's more difficult to implement.
-  static _check_alphabet(alphabet: string[], input: string, rules: ContextFreeLSystemRules): Error | undefined {
+  static _check_alphabet(alphabet: string[], input: string | undefined, rules: ContextFreeLSystemRules | undefined): Error | undefined {
     if(alphabet.length === 0) {
       return new Error("Alphabet may not be empty.");
+    }
+
+    if(input === undefined && rules === undefined) {
+      return new Error("Either Raw L-System input or L-System rules must be defined to check the alphabet against.")
     }
 
     const lookup = new Set();
@@ -77,25 +81,26 @@ class ContextFreeLSystem {
       lookup.add(symbol);
     }
     // Check input
-    for(let single_char of input) {
-      // Case of the input containing an unrecognized single letter symbol
-      if(!lookup.has(single_char)) {
-        return new Error('Input contains an letter symbol outside the defined alphabet.');
-      }
-    }
-    // Check rules quadratic O(nk) + O(nv); n=#rules, k=avg rule key length, v=avg rule value length
-    for(const [rule_key, rule_value] of Object.entries(rules)) {
-      console.log("DEBUG CHECK RULE " + rule_key + " | " + rule_value);
-      for(let rule_lookup_letter of rule_key) {
-        if(!alphabet.includes(rule_lookup_letter)) {
-          return new Error('Rule lookup key contains symbol outside the defined alphabet.');
+    if(input !== undefined) {
+      for(let single_char of input) {
+        // Case of the input containing an unrecognized single letter symbol
+        if(!lookup.has(single_char)) {
+          return new Error('Input contains an letter symbol outside the defined alphabet.');
         }
       }
-      for(let rule_value_letter of rule_value) {
-        console.log(rule_value_letter)
-        console.log(alphabet.includes(rule_value_letter))
-        if(!alphabet.includes(rule_value_letter)) {
-          return new Error('Rule action contains symbol outside the defined alphabet.');
+    }
+    if(rules !== undefined) {
+      // Check rules quadratic O(nk) + O(nv); n=#rules, k=avg rule key length, v=avg rule value length
+      for(const [rule_key, rule_value] of Object.entries(rules)) {
+        for(let rule_lookup_letter of rule_key) {
+          if(!alphabet.includes(rule_lookup_letter)) {
+            return new Error('Rule lookup key contains symbol outside the defined alphabet.');
+          }
+        }
+        for(let rule_value_letter of rule_value) {
+          if(!alphabet.includes(rule_value_letter)) {
+            return new Error('Rule action contains symbol outside the defined alphabet.');
+          }
         }
       }
     }

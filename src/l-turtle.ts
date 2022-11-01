@@ -66,6 +66,11 @@ class LTurtle {
   }
 
   process_lstr(lsystem: string, draw_rules: LTurtleDrawRules) {
+    // Not a compatible rule interface check w/ different rule types across lsystem text generation and lturtle draw rules.
+    const err = ContextFreeLSystem._check_alphabet(Object.keys(draw_rules.map), lsystem, undefined);
+    if(!err) {
+      console.log("no alphabet error (lsystem check passed)")
+    }
     if(draw_rules === undefined || draw_rules == null) {
       throw new Error("LTurtle draw rules must be specified either by looking a system up by name with LTurtle.get_draw_rules, or by specifying a custom rule map.")
     }
@@ -73,10 +78,12 @@ class LTurtle {
     let i=0;
     // TODO: MANUAL DEBUG OVERRIDE
     // let MAX_ITER = 30
+    console.log(draw_rules.map)
     for(let letter of lsystem) {
       if(!draw_rules.map[letter]) {
         throw new Error("Encounted unknown letter symbol " + letter);
       }
+      console.log(`${i} debug ${letter}`)
       draw_rules.map[letter](this);
       i++;
       // if(i > MAX_ITER) {
@@ -132,6 +139,7 @@ class LTurtle {
     const DEBUG_SHOULD_TURTLE_WRAP = false;
     let plant_system_map: LTurtleSystemMap = {
       "F": (turtle: LTurtle) => {
+        console.log("F: move")
         turtle.move(DEBUG_STEP_DISTANCE, DEBUG_SHOULD_TURTLE_WRAP);
       }, // draw forward
       "-": (turtle: LTurtle) => {
