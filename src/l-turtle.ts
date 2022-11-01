@@ -3,6 +3,11 @@
 
 // One set of draw rules per lindenmayer system (same dictionary lookup scheme but its a str=>draw fn callback instead of str=>str replacement)
 interface LTurtleDrawRules {
+  start: Position;
+  map: LTurtleSystemMap;
+}
+
+interface LTurtleSystemMap {
   [key: string]: (turtle: LTurtle) => void;
 }
 
@@ -54,25 +59,31 @@ class LTurtle {
     this.ctx?.moveTo(this.x, this.height - this.y);
   }
 
+  set_position(position: Position) {
+    this.x = position.x;
+    this.y = position.y;
+    this.angle = position.angle;
+  }
+
   process_lstr(lsystem: string, draw_rules: LTurtleDrawRules) {
     if(draw_rules === undefined || draw_rules == null) {
       throw new Error("LTurtle draw rules must be specified either by looking a system up by name with LTurtle.get_draw_rules, or by specifying a custom rule map.")
     }
+    this.set_position(draw_rules.start);
     let i=0;
     // TODO: MANUAL DEBUG OVERRIDE
-    let MAX_ITER = 30
+    // let MAX_ITER = 30
     for(let letter of lsystem) {
-      console.log("i=" + i);
-      if(!draw_rules[letter]) {
+      if(!draw_rules.map[letter]) {
         throw new Error("Encounted unknown letter symbol " + letter);
       }
-      draw_rules[letter](this);
+      draw_rules.map[letter](this);
       i++;
-      if(i > MAX_ITER) {
-        break;
-      }
+      // if(i > MAX_ITER) {
+      //   break;
+      // }
     }
-    console.log("testing string " + lsystem.slice(0, MAX_ITER))
+    // console.log("testing string " + lsystem.slice(0, MAX_ITER))
   }
 
   push_state() {
@@ -116,10 +127,10 @@ class LTurtle {
     return y >= 0 && y <= this.height;
   }
 
-  static get_system_draw_rules(name: ContextFreeLSystemName) {
+  static get_system_draw_rules(name: ContextFreeLSystemName): LTurtleDrawRules | undefined {
     const DEBUG_STEP_DISTANCE = 5;
-    const DEBUG_SHOULD_TURTLE_WRAP = true;
-    let plant_draw_rules: LTurtleDrawRules = {
+    const DEBUG_SHOULD_TURTLE_WRAP = false;
+    let plant_system_map: LTurtleSystemMap = {
       "F": (turtle: LTurtle) => {
         turtle.move(DEBUG_STEP_DISTANCE, DEBUG_SHOULD_TURTLE_WRAP);
       }, // draw forward
@@ -137,9 +148,15 @@ class LTurtle {
         turtle.pop_state();
       }, // restore (pop) saved position and angle values
     }
+    // TODO: BETTER POSITIONING AND BETTER WAYS TO CUSTOMIZE RENDERS
+    let plant_system_draw_rules: LTurtleDrawRules = {
+      start: {x: 100, y: 0, angle: 45},
+      map: plant_system_map
+    }
+
     switch(name) {
       case 'plant':
-        return plant_draw_rules;
+        return plant_system_draw_rules;
     }
   }
 }

@@ -16,13 +16,19 @@
     window.onload = function() {
       // TODO: Keep working on the Turtle / canvas element and init interface, as well as L System draw rules
       const turtle = new LTurtle(1000, 1000, x=500, y=0);
-      const system = ContextFreeLSystem.get_system("plant");
       // for(let i=1; i<=5; i++) {
-      //   // console.log("n=" + i + " | system " + system.step_n(i));
-      //   // console.log("move step")
-      //   turtle.move(50);
-      // }
-      turtle.process_lstr(system.step_n(4), LTurtle.get_system_draw_rules("plant"));
+        //   // console.log("n=" + i + " | system " + system.step_n(i));
+        //   // console.log("move step")
+        //   turtle.move(50);
+        // }
+      const system_name = "plant";
+      const iterations = 4;
+      const system = ContextFreeLSystem.get_system(system_name);
+      console.log(system);
+      console.log(LTurtle.get_system_draw_rules(system_name))
+      const completed_system = system.step_n(iterations)
+      console.log(completed_system);
+      turtle.process_lstr(completed_system, LTurtle.get_system_draw_rules(system_name));
     }
   </script>
 </body>
