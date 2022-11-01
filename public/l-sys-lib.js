@@ -82,7 +82,7 @@ class ContextFreeLSystem {
             case 'algea':
                 return new ContextFreeLSystem({ name: "algea", axiom: "a", alphabet: ["a, b"], rules: { "a": "ab", "b": "a" } });
             case 'plant':
-                return new ContextFreeLSystem({ name: "plant", axiom: "X", alphabet: ["X", "F", "+", "-", "[", "]"], rules: { "X": "F+[[X]-XA]-F[-FX]+X", "F": "FF" } });
+                return new ContextFreeLSystem({ name: "plant", axiom: "X", alphabet: ["X", "F", "+", "-", "[", "]"], rules: { "X": "F+[[X]-X]-F[-FX]+X", "F": "FF" } });
         }
     }
 }
