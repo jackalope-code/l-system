@@ -68,29 +68,16 @@ class LTurtle {
   process_lstr(lsystem: string, draw_rules: LTurtleDrawRules) {
     // Not a compatible rule interface check w/ different rule types across lsystem text generation and lturtle draw rules.
     const err = ContextFreeLSystem._check_alphabet(Object.keys(draw_rules.map), lsystem, undefined);
-    if(!err) {
-      console.log("no alphabet error (lsystem check passed)")
-    }
     if(draw_rules === undefined || draw_rules == null) {
       throw new Error("LTurtle draw rules must be specified either by looking a system up by name with LTurtle.get_draw_rules, or by specifying a custom rule map.")
     }
     this.set_position(draw_rules.start);
-    let i=0;
-    // TODO: MANUAL DEBUG OVERRIDE
-    // let MAX_ITER = 30
-    console.log(draw_rules.map)
     for(let letter of lsystem) {
       if(!draw_rules.map[letter]) {
         throw new Error("Encounted unknown letter symbol " + letter);
       }
-      console.log(`${i} debug ${letter}`)
       draw_rules.map[letter](this);
-      i++;
-      // if(i > MAX_ITER) {
-      //   break;
-      // }
     }
-    // console.log("testing string " + lsystem.slice(0, MAX_ITER))
   }
 
   push_state() {
@@ -99,11 +86,13 @@ class LTurtle {
   }
 
   pop_state() {
-    const restored_pt = this.history.pop();
-    if(restored_pt) {
-      this.x = restored_pt.x;
-      this.y = restored_pt.y;
-      this.angle = restored_pt.angle;
+    if(this.history.length > 0) {
+      const restored_pt = this.history.pop();
+      if(restored_pt) {
+        this.x = restored_pt.x;
+        this.y = restored_pt.y;
+        this.angle = restored_pt.angle;
+      }
     }
     // this.ctx?.beginPath();
   }
@@ -139,7 +128,6 @@ class LTurtle {
     const DEBUG_SHOULD_TURTLE_WRAP = false;
     let plant_system_map: LTurtleSystemMap = {
       "F": (turtle: LTurtle) => {
-        console.log("F: move")
         turtle.move(DEBUG_STEP_DISTANCE, DEBUG_SHOULD_TURTLE_WRAP);
       }, // draw forward
       "-": (turtle: LTurtle) => {
@@ -158,7 +146,7 @@ class LTurtle {
     }
     // TODO: BETTER POSITIONING AND BETTER WAYS TO CUSTOMIZE RENDERS
     let plant_system_draw_rules: LTurtleDrawRules = {
-      start: {x: 100, y: 0, angle: 45},
+      start: {x: 100, y: 50, angle: 45},
       map: plant_system_map
     }
 
