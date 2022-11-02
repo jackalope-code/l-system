@@ -1,9 +1,15 @@
-"use strict";
-// Global module l-sys-lib. Compiled from Typescript without webpack rn. Update to webpack UMD.
-// Text based Lindenmayer systems designed in tandem with turtle graphics l-turtle
-// Only has context free deterministic grammar rn. Add stochastic and then look into other grammars.
+// Single threaded library class core for context free L-systems.
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 // TODO: Does not currently check for invalid systems like unrecognized symbols. Rule checking is more difficult lol.
-class ContextFreeLSystem {
+export class ContextFreeLSystem {
     constructor(init) {
         const { axiom, alphabet, name, rules } = init;
         //   Protected by an alphabet/rule guard check which trivially (overcoded hehe)
@@ -20,13 +26,29 @@ class ContextFreeLSystem {
         this.rules = rules;
     }
     step_n(max_iterations) {
-        let system = this.axiom;
-        for (let i = 0; i < max_iterations; i++) {
-            system = this._apply_context_free_rules(system);
-        }
-        return system;
+        return __awaiter(this, void 0, void 0, function* () {
+            let system = this.axiom;
+            for (let i = 0; i < max_iterations; i++) {
+                system = yield this.step(system);
+            }
+            return system;
+        });
     }
-    _apply_context_free_rules(system) {
+    step(system) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield new Promise((resolve, reject) => {
+                this._step(system, (res, err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(res);
+                    }
+                });
+            });
+        });
+    }
+    _step(system, callback) {
         let new_system = "";
         for (let letter of system) {
             // L-system variable lookup / constant differentiation
@@ -37,7 +59,7 @@ class ContextFreeLSystem {
                 new_system = new_system.concat(letter);
             }
         }
-        return new_system;
+        return callback(new_system, undefined);
     }
     // Assumes a single character alphabet and method of processing
     // Check for a valid alphabet/input/rule set. Return a silent error object with diagnostic

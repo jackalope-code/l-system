@@ -1,10 +1,8 @@
-"use strict";
-// Global module l-turtle. Compiled from Typescript without webpack bundling rn. Update to webpack UMD.
-// W Lindenmayer Turtle
-function toRadians(degrees) {
+import { ContextFreeLSystem } from "l-sys-lib-core";
+export function toRadians(degrees) {
     return degrees * (Math.PI / 180);
 }
-class LTurtle {
+export class LTurtle {
     // TODO: Cleaner way of initializing quickly/easily for different system starting configurations?
     constructor(width, height, x = width / 2, y = height / 2, angle = 90, step_distance = 5) {
         var _a, _b;
@@ -76,6 +74,7 @@ class LTurtle {
             this.y = this.y % this.height;
         }
         else {
+            // Remain within boundary
             this.x = this.check_x(this.x) ? this.x : this.width;
             this.y = this.check_y(this.y) ? this.y : this.height;
         }
@@ -112,7 +111,7 @@ class LTurtle {
                 turtle.pop_state();
             }, // restore (pop) saved position and angle values
         };
-        // TODO: BETTER POSITIONING AND BETTER WAYS TO CUSTOMIZE RENDERS
+        // TODO: BETTER POSITIONING AND BETTER WAYS TO CUSTOMIZE RENDER
         let plant_system_draw_rules = {
             start: { x: 100, y: 50, angle: 45 },
             map: plant_system_map

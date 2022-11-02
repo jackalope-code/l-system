@@ -1,24 +1,28 @@
+// Single threaded library class core for context free L-systems.
+
 // Global module l-sys-lib. Compiled from Typescript without webpack rn. Update to webpack UMD.
 // Text based Lindenmayer systems designed in tandem with turtle graphics l-turtle
 // Only has context free deterministic grammar rn. Add stochastic and then look into other grammars.
 
 // exports removed until webpack is added for proper library bundling
-interface ContextFreeLSystemRules {
+export interface ContextFreeLSystemRules {
   [key: string]: string
 }
 
 // type ContextFreeLSystems = "algea" | "bin_tree" | "cantor_set" | "koch_curve" | "sier_triangle" | "dragon_curve" | "plant"
-type ContextFreeLSystemName = "algea" | "plant";
+export type ContextFreeLSystemName = "algea" | "plant";
 
-interface ContextFreeLSystemInit {
+export interface ContextFreeLSystemInit {
   axiom: string;
   alphabet: string[];
   name: string;
   rules: ContextFreeLSystemRules
 }
 
+type LSystemResultCallback = (result: string, error: Error | undefined) => any;
+
 // TODO: Does not currently check for invalid systems like unrecognized symbols. Rule checking is more difficult lol.
-class ContextFreeLSystem {
+export class ContextFreeLSystem {
   alphabet: string[];
   rules: ContextFreeLSystemRules;
   axiom: string;
@@ -40,15 +44,27 @@ class ContextFreeLSystem {
     this.rules = rules;
   }
 
-  step_n(max_iterations: number): string {
+  async step_n(max_iterations: number): Promise<string> {
     let system = this.axiom;
     for(let i=0; i<max_iterations; i++) {
-      system = this._apply_context_free_rules(system);
+      system = await this.step(system);
     }
     return system;
   }
 
-  _apply_context_free_rules(system: string): string {
+  async step(system: string): Promise<string> {
+    return await new Promise((resolve, reject) => {
+      this._step(system, (res, err) => {
+        if(err) {
+          reject(err);
+        } else {
+          resolve(res);
+        }
+      })
+    });
+  }
+
+  _step(system: string, callback: LSystemResultCallback) {
     let new_system = "";
     for(let letter of system) {
       // L-system variable lookup / constant differentiation
@@ -58,7 +74,7 @@ class ContextFreeLSystem {
         new_system = new_system.concat(letter);
       }
     }
-    return new_system;
+    return callback(new_system, undefined);
   }
 
   // Assumes a single character alphabet and method of processing

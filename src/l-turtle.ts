@@ -1,34 +1,37 @@
+import {ContextFreeLSystem, ContextFreeLSystemName} from "l-sys-lib-core";
+
 // Global module l-turtle. Compiled from Typescript without webpack bundling rn. Update to webpack UMD.
 // W Lindenmayer Turtle
+// TODO: Coordinate system for graphics?
 
 // One set of draw rules per lindenmayer system (same dictionary lookup scheme but its a str=>draw fn callback instead of str=>str replacement)
-interface LTurtleDrawRules {
-  start: Position;
+export interface LTurtleDrawRules {
+  start: TurtlePosition;
   map: LTurtleSystemMap;
 }
 
-interface LTurtleSystemMap {
+export interface LTurtleSystemMap {
   [key: string]: (turtle: LTurtle) => void;
 }
 
-interface Position {
+export interface TurtlePosition {
   x: number;
   y: number;
   angle: number;
 }
 
-function toRadians (degrees: number) {
+export function toRadians (degrees: number) {
   return degrees * (Math.PI / 180);
 }
 
-class LTurtle {
+export class LTurtle {
   width: number;
   height: number;
   step_distance: number;
   x: number;
   y: number;
   angle: number;
-  history: Position[] = [];
+  history: TurtlePosition[] = [];
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D | null;
 
@@ -59,7 +62,7 @@ class LTurtle {
     this.ctx?.moveTo(this.x, this.height - this.y);
   }
 
-  set_position(position: Position) {
+  set_position(position: TurtlePosition) {
     // this.ctx?.moveTo(this.x, this.y);
     this.x = position.x;
     this.y = position.y;
@@ -104,6 +107,7 @@ class LTurtle {
       this.x = this.x % this.width;
       this.y = this.y % this.height;
     } else {
+      // Remain within boundary
       this.x = this.check_x(this.x) ? this.x : this.width;
       this.y = this.check_y(this.y) ? this.y : this.height;
     }
@@ -144,7 +148,7 @@ class LTurtle {
         turtle.pop_state();
       }, // restore (pop) saved position and angle values
     }
-    // TODO: BETTER POSITIONING AND BETTER WAYS TO CUSTOMIZE RENDERS
+    // TODO: BETTER POSITIONING AND BETTER WAYS TO CUSTOMIZE RENDER
     let plant_system_draw_rules: LTurtleDrawRules = {
       start: {x: 100, y: 50, angle: 45},
       map: plant_system_map
