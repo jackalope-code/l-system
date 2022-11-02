@@ -1,30 +1,30 @@
-import {ContextFreeLSystem, ContextFreeLSystemName} from "l-sys-lib-core";
-
 // Global module l-turtle. Compiled from Typescript without webpack bundling rn. Update to webpack UMD.
 // W Lindenmayer Turtle
 // TODO: Coordinate system for graphics?
 
+import { ContextFreeLSystemName } from "./l-sys-lib-core";
+
 // One set of draw rules per lindenmayer system (same dictionary lookup scheme but its a str=>draw fn callback instead of str=>str replacement)
-export interface LTurtleDrawRules {
+interface LTurtleDrawRules {
   start: TurtlePosition;
   map: LTurtleSystemMap;
 }
 
-export interface LTurtleSystemMap {
+interface LTurtleSystemMap {
   [key: string]: (turtle: LTurtle) => void;
 }
 
-export interface TurtlePosition {
+interface TurtlePosition {
   x: number;
   y: number;
   angle: number;
 }
 
-export function toRadians (degrees: number) {
+function toRadians (degrees: number) {
   return degrees * (Math.PI / 180);
 }
 
-export class LTurtle {
+class LTurtle {
   width: number;
   height: number;
   step_distance: number;
@@ -70,11 +70,12 @@ export class LTurtle {
   }
 
   process_lstr(lsystem: string, draw_rules: LTurtleDrawRules) {
+    // TODO: CAN'T CHECK WITHOUT BUNDLING
     // Not a compatible rule interface check w/ different rule types across lsystem text generation and lturtle draw rules.
-    const err = ContextFreeLSystem._check_alphabet(Object.keys(draw_rules.map), lsystem, undefined);
-    if(draw_rules === undefined || draw_rules == null) {
-      throw new Error("LTurtle draw rules must be specified either by looking a system up by name with LTurtle.get_draw_rules, or by specifying a custom rule map.")
-    }
+    // const err = ContextFreeLSystem._check_alphabet(Object.keys(draw_rules.map), lsystem, undefined);
+    // if(draw_rules === undefined || draw_rules == null) {
+    //   throw new Error("LTurtle draw rules must be specified either by looking a system up by name with LTurtle.get_draw_rules, or by specifying a custom rule map.")
+    // }
     this.set_position(draw_rules.start);
     for(let letter of lsystem) {
       if(!draw_rules.map[letter]) {

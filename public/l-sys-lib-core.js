@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 // TODO: Does not currently check for invalid systems like unrecognized symbols. Rule checking is more difficult lol.
-export class ContextFreeLSystem {
+class ContextFreeLSystem {
     constructor(init) {
         const { axiom, alphabet, name, rules } = init;
         //   Protected by an alphabet/rule guard check which trivially (overcoded hehe)
@@ -72,7 +72,7 @@ export class ContextFreeLSystem {
             return new Error("Alphabet may not be empty.");
         }
         if (input === undefined && rules === undefined) {
-            return new Error("Either Raw L-System input or L-System rules must be defined to check the alphabet against.");
+            return new Error("Either raw L-System input or L-System rules must be defined to check the alphabet against.");
         }
         const lookup = new Set();
         for (let symbol of alphabet) {
@@ -112,3 +112,4 @@ export class ContextFreeLSystem {
         }
     }
 }
+export {};

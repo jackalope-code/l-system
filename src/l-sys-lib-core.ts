@@ -22,7 +22,7 @@ export interface ContextFreeLSystemInit {
 type LSystemResultCallback = (result: string, error: Error | undefined) => any;
 
 // TODO: Does not currently check for invalid systems like unrecognized symbols. Rule checking is more difficult lol.
-export class ContextFreeLSystem {
+class ContextFreeLSystem {
   alphabet: string[];
   rules: ContextFreeLSystemRules;
   axiom: string;
@@ -89,7 +89,7 @@ export class ContextFreeLSystem {
     }
 
     if(input === undefined && rules === undefined) {
-      return new Error("Either Raw L-System input or L-System rules must be defined to check the alphabet against.")
+      return new Error("Either raw L-System input or L-System rules must be defined to check the alphabet against.")
     }
 
     const lookup = new Set();

@@ -1,8 +1,10 @@
-import { ContextFreeLSystem } from "l-sys-lib-core";
-export function toRadians(degrees) {
+// Global module l-turtle. Compiled from Typescript without webpack bundling rn. Update to webpack UMD.
+// W Lindenmayer Turtle
+// TODO: Coordinate system for graphics?
+function toRadians(degrees) {
     return degrees * (Math.PI / 180);
 }
-export class LTurtle {
+class LTurtle {
     // TODO: Cleaner way of initializing quickly/easily for different system starting configurations?
     constructor(width, height, x = width / 2, y = height / 2, angle = 90, step_distance = 5) {
         var _a, _b;
@@ -38,11 +40,12 @@ export class LTurtle {
         this.angle = position.angle;
     }
     process_lstr(lsystem, draw_rules) {
+        // TODO: CAN'T CHECK WITHOUT BUNDLING
         // Not a compatible rule interface check w/ different rule types across lsystem text generation and lturtle draw rules.
-        const err = ContextFreeLSystem._check_alphabet(Object.keys(draw_rules.map), lsystem, undefined);
-        if (draw_rules === undefined || draw_rules == null) {
-            throw new Error("LTurtle draw rules must be specified either by looking a system up by name with LTurtle.get_draw_rules, or by specifying a custom rule map.");
-        }
+        // const err = ContextFreeLSystem._check_alphabet(Object.keys(draw_rules.map), lsystem, undefined);
+        // if(draw_rules === undefined || draw_rules == null) {
+        //   throw new Error("LTurtle draw rules must be specified either by looking a system up by name with LTurtle.get_draw_rules, or by specifying a custom rule map.")
+        // }
         this.set_position(draw_rules.start);
         for (let letter of lsystem) {
             if (!draw_rules.map[letter]) {
@@ -122,3 +125,4 @@ export class LTurtle {
         }
     }
 }
+export {};
