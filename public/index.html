@@ -14,10 +14,10 @@
     // Load from global/UMD library (dynamic content is added to l-system-root so I use window onload)
     // TODO: MISSING TYPESCRIPT TYPES
     window.onload = function() {
-      // TODO: Keep working on the Turtle / canvas element and init, customize, error interfaces, as well as L System draw rules and system overlap
+      // TODO: Keep working on the Turtle / canvas element and init, customize, error interfaces, as well as L System draw rules and library usage/overlap
       const turtle = new LTurtle(1000, 1000, x=500, y=0);
       const system_name = "plant";
-      const iterations = 4;
+      const iterations = 6;
       const system = ContextFreeLSystem.get_system(system_name);
       const completed_system = system.step_n(iterations)
       turtle.process_lstr(completed_system, LTurtle.get_system_draw_rules(system_name));

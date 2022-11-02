@@ -34,6 +34,7 @@ class LTurtle {
         (_b = this.ctx) === null || _b === void 0 ? void 0 : _b.moveTo(this.x, this.height - this.y);
     }
     set_position(position) {
+        // this.ctx?.moveTo(this.x, this.y);
         this.x = position.x;
         this.y = position.y;
         this.angle = position.angle;
@@ -59,10 +60,9 @@ class LTurtle {
     pop_state() {
         if (this.history.length > 0) {
             const restored_pt = this.history.pop();
+            // TODO: Unnecessary double check
             if (restored_pt) {
-                this.x = restored_pt.x;
-                this.y = restored_pt.y;
-                this.angle = restored_pt.angle;
+                this.set_position(restored_pt);
             }
         }
         // this.ctx?.beginPath();
