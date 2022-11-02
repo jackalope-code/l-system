@@ -1,3 +1,4 @@
+"use strict";
 // Single threaded library class core for context free L-systems.
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -31,7 +32,7 @@ class ContextFreeLSystem {
             for (let i = 0; i < max_iterations; i++) {
                 system = yield this.step(system);
             }
-            return system;
+            return new Promise((resolve) => resolve(system));
         });
     }
     step(system) {
@@ -49,17 +50,17 @@ class ContextFreeLSystem {
         });
     }
     _step(system, callback) {
-        let new_system = "";
+        let new_system = [];
         for (let letter of system) {
             // L-system variable lookup / constant differentiation
             if (letter in this.rules) {
-                new_system = new_system.concat(this.rules[letter]);
+                new_system.push(this.rules[letter]);
             }
             else {
-                new_system = new_system.concat(letter);
+                new_system.push(letter);
             }
         }
-        return callback(new_system, undefined);
+        return callback(new_system.join(""), undefined);
     }
     // Assumes a single character alphabet and method of processing
     // Check for a valid alphabet/input/rule set. Return a silent error object with diagnostic
@@ -112,4 +113,3 @@ class ContextFreeLSystem {
         }
     }
 }
-export {};

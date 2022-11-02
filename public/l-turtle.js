@@ -1,3 +1,4 @@
+"use strict";
 // Global module l-turtle. Compiled from Typescript without webpack bundling rn. Update to webpack UMD.
 // W Lindenmayer Turtle
 // TODO: Coordinate system for graphics?
@@ -53,6 +54,7 @@ class LTurtle {
             }
             draw_rules.map[letter](this);
         }
+        this.stroke();
     }
     push_state() {
         this.history.push({ x: this.x, y: this.y, angle: this.angle });
@@ -68,8 +70,12 @@ class LTurtle {
         }
         // this.ctx?.beginPath();
     }
+    stroke() {
+        var _a;
+        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.stroke();
+    }
     move(distance = this.step_distance, wrap = false) {
-        var _a, _b;
+        var _a;
         this.x += distance * Math.cos(toRadians(this.angle));
         this.y += distance * Math.sin(toRadians(this.angle));
         if (wrap) {
@@ -82,7 +88,6 @@ class LTurtle {
             this.y = this.check_y(this.y) ? this.y : this.height;
         }
         (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.lineTo(this.x, this.height - this.y);
-        (_b = this.ctx) === null || _b === void 0 ? void 0 : _b.stroke();
     }
     turn(angle) {
         this.angle = (this.angle + angle) % 360;
@@ -94,7 +99,7 @@ class LTurtle {
         return y >= 0 && y <= this.height;
     }
     static get_system_draw_rules(name) {
-        const DEBUG_STEP_DISTANCE = 5;
+        const DEBUG_STEP_DISTANCE = 15;
         const DEBUG_SHOULD_TURTLE_WRAP = false;
         let plant_system_map = {
             "F": (turtle) => {
@@ -114,9 +119,9 @@ class LTurtle {
                 turtle.pop_state();
             }, // restore (pop) saved position and angle values
         };
-        // TODO: BETTER POSITIONING AND BETTER WAYS TO CUSTOMIZE RENDER
+        // TODO: BETTER POSITIONING AND BETTER WAYS TO CUSTOMIZE RENDER. BAD CODE INTERFACE FOR TURTLE DRAW RULE INIT (DUPLICATED W/ CONSTRUCTOR, INFLEXIBLE)
         let plant_system_draw_rules = {
-            start: { x: 100, y: 50, angle: 45 },
+            start: { x: 200, y: 200, angle: 45 },
             map: plant_system_map
         };
         switch (name) {
@@ -125,4 +130,3 @@ class LTurtle {
         }
     }
 }
-export {};

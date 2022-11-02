@@ -2,8 +2,6 @@
 // W Lindenmayer Turtle
 // TODO: Coordinate system for graphics?
 
-import { ContextFreeLSystemName } from "./l-sys-lib-core";
-
 // One set of draw rules per lindenmayer system (same dictionary lookup scheme but its a str=>draw fn callback instead of str=>str replacement)
 interface LTurtleDrawRules {
   start: TurtlePosition;
@@ -83,6 +81,7 @@ class LTurtle {
       }
       draw_rules.map[letter](this);
     }
+    this.stroke();
   }
 
   push_state() {
@@ -101,6 +100,10 @@ class LTurtle {
     // this.ctx?.beginPath();
   }
 
+  stroke() {
+    this.ctx?.stroke();
+  }
+
   move(distance=this.step_distance, wrap=false) {
     this.x += distance*Math.cos(toRadians(this.angle));
     this.y += distance*Math.sin(toRadians(this.angle));
@@ -113,7 +116,6 @@ class LTurtle {
       this.y = this.check_y(this.y) ? this.y : this.height;
     }
     this.ctx?.lineTo(this.x, this.height - this.y);
-    this.ctx?.stroke();
   }
 
   turn(angle: number) {
@@ -129,7 +131,7 @@ class LTurtle {
   }
 
   static get_system_draw_rules(name: ContextFreeLSystemName): LTurtleDrawRules | undefined {
-    const DEBUG_STEP_DISTANCE = 5;
+    const DEBUG_STEP_DISTANCE = 15;
     const DEBUG_SHOULD_TURTLE_WRAP = false;
     let plant_system_map: LTurtleSystemMap = {
       "F": (turtle: LTurtle) => {
@@ -149,9 +151,9 @@ class LTurtle {
         turtle.pop_state();
       }, // restore (pop) saved position and angle values
     }
-    // TODO: BETTER POSITIONING AND BETTER WAYS TO CUSTOMIZE RENDER
+    // TODO: BETTER POSITIONING AND BETTER WAYS TO CUSTOMIZE RENDER. BAD CODE INTERFACE FOR TURTLE DRAW RULE INIT (DUPLICATED W/ CONSTRUCTOR, INFLEXIBLE)
     let plant_system_draw_rules: LTurtleDrawRules = {
-      start: {x: 100, y: 50, angle: 45},
+      start: {x: 200, y: 200, angle: 45},
       map: plant_system_map
     }
 

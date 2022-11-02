@@ -5,14 +5,14 @@
 // Only has context free deterministic grammar rn. Add stochastic and then look into other grammars.
 
 // exports removed until webpack is added for proper library bundling
-export interface ContextFreeLSystemRules {
+interface ContextFreeLSystemRules {
   [key: string]: string
 }
 
 // type ContextFreeLSystems = "algea" | "bin_tree" | "cantor_set" | "koch_curve" | "sier_triangle" | "dragon_curve" | "plant"
-export type ContextFreeLSystemName = "algea" | "plant";
+type ContextFreeLSystemName = "algea" | "plant";
 
-export interface ContextFreeLSystemInit {
+interface ContextFreeLSystemInit {
   axiom: string;
   alphabet: string[];
   name: string;
@@ -49,7 +49,7 @@ class ContextFreeLSystem {
     for(let i=0; i<max_iterations; i++) {
       system = await this.step(system);
     }
-    return system;
+    return new Promise((resolve) => resolve(system));
   }
 
   async step(system: string): Promise<string> {
@@ -65,16 +65,16 @@ class ContextFreeLSystem {
   }
 
   _step(system: string, callback: LSystemResultCallback) {
-    let new_system = "";
+    let new_system: string[] = [];
     for(let letter of system) {
       // L-system variable lookup / constant differentiation
       if(letter in this.rules) {
-        new_system = new_system.concat(this.rules[letter]);
+        new_system.push(this.rules[letter]);
       } else {
-        new_system = new_system.concat(letter);
+        new_system.push(letter);
       }
     }
-    return callback(new_system, undefined);
+    return callback(new_system.join(""), undefined);
   }
 
   // Assumes a single character alphabet and method of processing
